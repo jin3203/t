@@ -1,0 +1,141 @@
+:root {
+  --primary: #ff0080; /* Hot Pink */
+  --secondary: #00ffcc; /* Aqua Blue */
+  --tertiary: #ccff00; /* Bright Yellow/Green */
+  --bg-color: #ffe6f2; /* Soft Pink Base */
+  --text-color: #333;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Jua', sans-serif;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(circle at 50% 50%, #ffffff 0%, transparent 80%),
+                    radial-gradient(circle at 10% 20%, var(--secondary) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, var(--tertiary) 0%, transparent 40%);
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop-in {
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite ease-in-out;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Global Elements styling */
+h1 {
+  font-size: 4rem;
+  color: #fff;
+  text-shadow: 4px 4px 0 var(--primary), -2px -2px 0 var(--secondary);
+  margin-bottom: 30px;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 3px 3px 0 var(--primary);
+  margin-bottom: 20px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 30px;
+  padding: 40px 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), inset 0 -5px 15px rgba(255, 0, 128, 0.1);
+  border: 5px solid #fff;
+  backdrop-filter: blur(10px);
+}
+
+.bubbly-btn {
+  font-family: 'Jua', sans-serif;
+  font-size: 2rem;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 50px;
+  background-color: var(--secondary);
+  color: #111;
+  cursor: pointer;
+  box-shadow: 0 10px 0 #00cca3, 0 15px 20px rgba(0,0,0,0.2);
+  transition: all 0.1s ease-in-out;
+  text-transform: uppercase;
+  margin: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bubbly-btn:active {
+  transform: translateY(10px);
+  box-shadow: 0 0 0 #00cca3, 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.bubbly-btn.pink {
+  background-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 10px 0 #cc0066, 0 15px 20px rgba(0,0,0,0.2);
+}
+.bubbly-btn.pink:active {
+  box-shadow: 0 0 0 #cc0066, 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.bubbly-btn.yellow {
+  background-color: var(--tertiary);
+  color: #111;
+  box-shadow: 0 10px 0 #99cc00, 0 15px 20px rgba(0,0,0,0.2);
+}
+.bubbly-btn.yellow:active {
+  box-shadow: 0 0 0 #99cc00, 0 5px 10px rgba(0,0,0,0.2);
+}
+
+/* 폼과 입력 등등 (필요시) */
+.score-badge {
+  display: inline-block;
+  background: var(--tertiary);
+  color: #333;
+  font-size: 1.8rem;
+  padding: 10px 25px;
+  border-radius: 30px;
+  box-shadow: 0 5px 0 #99cc00;
+  margin-bottom: 20px;
+  border: 3px solid #fff;
+}
