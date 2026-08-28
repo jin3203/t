@@ -42,7 +42,7 @@ export default function MotionProfileGraph({ points, motor }) {
         </div>
         <div className="graph-legend-info">
           <span className="legend-item blue-dot">■ Velocity [m/sec] (실선)</span>
-          <span className="legend-item red-dot">◆ Torque [%] (점선)</span>
+          <span className="legend-item red-dot">◆ Torque [N·m] (점선)</span>
         </div>
       </div>
 
@@ -69,9 +69,9 @@ export default function MotionProfileGraph({ points, motor }) {
               yAxisId="right"
               orientation="right"
               stroke="#dc2626"
-              domain={[-20, 40]}
-              label={{ value: 'Torque [%]', angle: 90, position: 'insideRight', offset: 10, fill: '#dc2626', fontSize: 12 }}
-              tickFormatter={(v) => `${v}%`}
+              domain={['auto', 'auto']}
+              label={{ value: 'Torque [N·m]', angle: 90, position: 'insideRight', offset: 10, fill: '#dc2626', fontSize: 12 }}
+              tickFormatter={(v) => typeof v === 'number' ? v.toFixed(2) : v}
               tick={{ fontSize: 11 }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -93,8 +93,8 @@ export default function MotionProfileGraph({ points, motor }) {
             <Line
               yAxisId="right"
               type="linear"
-              dataKey="torquePct"
-              name="Torque [%]"
+              dataKey="torqueNm"
+              name="Torque [N·m]"
               stroke="#dc2626"
               strokeWidth={2}
               strokeDasharray="5 5"
