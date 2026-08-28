@@ -651,15 +651,45 @@ body {
 .text-center { text-align: center; }
 
 @media print {
-  .no-print { display: none !important; }
-  .report-overlay {
-    position: relative;
-    background: transparent;
-    padding: 0;
+  /* Hide background application, header, main dashboard, and modals */
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
   }
+
+  .no-print,
+  .app-header,
+  .dashboard-content,
+  .modal-overlay,
+  .app-layout > *:not(.report-overlay) {
+    display: none !important;
+  }
+
+  /* Display only report-overlay and position it cleanly for print */
+  .report-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    z-index: 9999 !important;
+  }
+
   .report-sheet {
-    box-shadow: none;
-    padding: 0;
-    max-width: 100%;
+    box-shadow: none !important;
+    padding: 10mm 10mm !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: none !important;
+  }
+
+  .report-section {
+    page-break-inside: avoid;
   }
 }
