@@ -25,7 +25,7 @@ export default function MotionProfileGraph({ points, motor }) {
             속도 (Velocity): <strong>{data.velocity.toFixed(3)} m/s</strong> ({Math.round(data.rpm)} RPM)
           </p>
           <p className="text-red font-mono">
-            토크 (Torque): <strong>{data.torqueNm.toFixed(3)} N·m</strong> ({data.torquePct.toFixed(2)}%)
+            토크 (Torque): <strong>{data.torqueNm.toFixed(2)} N·m</strong> ({data.torquePct.toFixed(2)}%)
           </p>
         </div>
       );

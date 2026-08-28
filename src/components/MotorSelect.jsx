@@ -59,7 +59,7 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                     <optgroup key={maker} label={`--- ${maker} ---`}>
                       {list.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.model} ({p.powerW}W / {p.ratedTorque}Nm)
+                          {p.model} ({p.powerW}W / {Number(p.ratedTorque).toFixed(2)}Nm)
                         </option>
                       ))}
                     </optgroup>

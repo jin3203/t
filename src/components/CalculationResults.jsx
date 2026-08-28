@@ -17,7 +17,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">소요 가속 토크 (Accel Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.reqAccelTorque ? results.reqAccelTorque.toFixed(3) : '0.186'}
+                {results.reqAccelTorque ? results.reqAccelTorque.toFixed(2) : '0.19'}
               </td>
               <td className="field-unit">Nm</td>
             </tr>
@@ -25,7 +25,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">소요 감속 토크 (Decel Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.reqDecelTorque ? results.reqDecelTorque.toFixed(3) : '-0.036'}
+                {results.reqDecelTorque ? results.reqDecelTorque.toFixed(2) : '-0.04'}
               </td>
               <td className="field-unit">Nm</td>
             </tr>
@@ -33,7 +33,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">토크 실효치 (RMS Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.rmsTorque ? results.rmsTorque.toFixed(3) : '0.088'}
+                {results.rmsTorque ? results.rmsTorque.toFixed(2) : '0.09'}
               </td>
               <td className="field-unit">Nm</td>
             </tr>

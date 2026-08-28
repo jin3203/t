@@ -102,8 +102,8 @@ export default function ReportView({ inputs, motor, results, onClose }) {
                 <td>{motor.driveModel}</td>
                 <td>{motor.ratedSpeed} RPM</td>
                 <td>{motor.maxSpeed} RPM</td>
-                <td>{motor.ratedTorque} N·m</td>
-                <td>{motor.maxTorque} N·m</td>
+                <td>{Number(motor.ratedTorque).toFixed(2)} N·m</td>
+                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
                 <td>{(motor.rotorInertia * 1e4).toFixed(2)} ×10⁻⁴ kg·m²</td>
               </tr>
             </tbody>
@@ -126,22 +126,22 @@ export default function ReportView({ inputs, motor, results, onClose }) {
             <tbody>
               <tr>
                 <td>소요 가속 토크 (Accel Torque)</td>
-                <td>{results.reqAccelTorque?.toFixed(3)} N·m</td>
-                <td>{motor.maxTorque} N·m</td>
+                <td>{results.reqAccelTorque?.toFixed(2)} N·m</td>
+                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
                 <td>{results.checks?.accelTorque?.pct?.toFixed(2)}%</td>
                 <td className="font-bold text-green">OK</td>
               </tr>
               <tr>
                 <td>소요 감속 토크 (Decel Torque)</td>
-                <td>{results.reqDecelTorque?.toFixed(3)} N·m</td>
-                <td>{motor.maxTorque} N·m</td>
+                <td>{results.reqDecelTorque?.toFixed(2)} N·m</td>
+                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
                 <td>{results.checks?.decelTorque?.pct?.toFixed(2)}%</td>
                 <td className="font-bold text-green">OK</td>
               </tr>
               <tr>
                 <td>토크 실효치 (RMS Torque)</td>
-                <td>{results.rmsTorque?.toFixed(3)} N·m</td>
-                <td>{motor.ratedTorque} N·m</td>
+                <td>{results.rmsTorque?.toFixed(2)} N·m</td>
+                <td>{Number(motor.ratedTorque).toFixed(2)} N·m</td>
                 <td>{results.checks?.rmsTorque?.pct?.toFixed(2)}%</td>
                 <td className="font-bold text-green">OK</td>
               </tr>
