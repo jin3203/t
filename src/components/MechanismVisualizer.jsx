@@ -20,9 +20,6 @@ export default function MechanismVisualizer({ inputs, results, mechanismType }) 
           <ImageIcon size={18} className="text-purple" />
           <h2>{getMechanismTitle()}</h2>
         </div>
-        <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', background: '#f3e8ff', color: '#7e22ce', borderRadius: '4px', fontWeight: '600' }}>
-          정적 기구 개념도 (Static Diagram)
-        </span>
       </div>
 
       <div className="card-body viz-body">
@@ -47,10 +44,13 @@ export default function MechanismVisualizer({ inputs, results, mechanismType }) 
 
           {/* Servo Motor */}
           <rect x="30" y="60" width="75" height="70" rx="6" fill="url(#motorGrad)" stroke="#1e3a8a" strokeWidth="2" />
-          <text x="67" y="93" fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
-            SERVO MOTOR
+          <text x="67" y="80" fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
+            SERVO
           </text>
-          <text x="67" y="107" fill="#93c5fd" fontSize="9" fontWeight="600" textAnchor="middle">
+          <text x="67" y="94" fill="#ffffff" fontSize="11" fontWeight="bold" textAnchor="middle">
+            MOTOR
+          </text>
+          <text x="67" y="110" fill="#93c5fd" fontSize="9" fontWeight="600" textAnchor="middle">
             {inputs.motorModel || 'Selected Motor'}
           </text>
 
