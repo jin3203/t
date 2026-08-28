@@ -25,7 +25,7 @@ export default function EvaluationCheck({ results }) {
             <tr>
               <th className="text-center">항목 (Check Item)</th>
               <th className="text-center">Result_OK_NG</th>
-              <th className="text-center">Check (마진율/여유율)</th>
+              <th className="text-center">Check (부하율)</th>
             </tr>
           </thead>
           <tbody>

@@ -119,7 +119,7 @@ export default function ReportView({ inputs, motor, results, onClose }) {
                 <th>검토 항목</th>
                 <th>계산 요구치 (Required)</th>
                 <th>모터 사양치 (Motor Limit)</th>
-                <th>사용 마진율 (Utilization)</th>
+                <th>부하율 (Load Ratio)</th>
                 <th>판정 (Result)</th>
               </tr>
             </thead>
