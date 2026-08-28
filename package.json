@@ -1,5 +1,5 @@
 {
-  "name": "colorful-multiplication-game",
+  "name": "motor-sizing-evaluation-app",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "^1.34.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
