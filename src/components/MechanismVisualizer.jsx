@@ -54,22 +54,21 @@ export default function MechanismVisualizer({ inputs, results, mechanismType }) 
             {inputs.motorModel || 'Selected Motor'}
           </text>
 
-          {/* Flexible Coupling */}
-          <rect x="105" y="85" width="24" height="20" rx="3" fill="#64748b" stroke="#334155" strokeWidth="1" />
-          <text x="117" y="80" fill="#94a3b8" fontSize="8" textAnchor="middle">Coupling</text>
+          {/* Flexible Coupling (Enlarged with text inside) */}
+          <rect x="105" y="70" width="35" height="50" rx="4" fill="#475569" stroke="#1e293b" strokeWidth="1.5" />
+          <text x="122.5" y="99" fill="#ffffff" fontSize="7.5" fontWeight="bold" textAnchor="middle">
+            COUPLING
+          </text>
 
           {/* Screw Shaft / Belt Rail */}
-          <rect x="129" y="90" width="370" height="10" fill="url(#screwThreads)" stroke="#64748b" strokeWidth="1" />
+          <rect x="140" y="90" width="359" height="10" fill="url(#screwThreads)" stroke="#64748b" strokeWidth="1" />
 
-          {/* Bearing Support Blocks */}
-          <rect x="129" y="75" width="16" height="55" rx="2" fill="#475569" />
-          <text x="137" y="68" fill="#94a3b8" fontSize="8" textAnchor="middle">Support A</text>
-          <rect x="483" y="75" width="16" height="55" rx="2" fill="#475569" />
-          <text x="491" y="68" fill="#94a3b8" fontSize="8" textAnchor="middle">Support B</text>
+          {/* Bearing Support Blocks (No text labels) */}
+          <rect x="140" y="75" width="16" height="55" rx="2" fill="#334155" />
+          <rect x="483" y="75" width="16" height="55" rx="2" fill="#334155" />
 
-          {/* Linear Guide Rail */}
-          <rect x="145" y="122" width="338" height="8" fill="#94a3b8" />
-          <text x="314" y="128" fill="#0f172a" fontSize="7" fontWeight="bold" textAnchor="middle">LINEAR GUIDE RAIL</text>
+          {/* Linear Guide Rail (No text label) */}
+          <rect x="156" y="122" width="327" height="8" fill="#94a3b8" />
 
           {/* Moving Table (Load Mass) */}
           <g transform="translate(260, 0)">
