@@ -54,21 +54,21 @@ export default function MechanismVisualizer({ inputs, results, mechanismType }) 
             {inputs.motorModel || 'Selected Motor'}
           </text>
 
-          {/* Flexible Coupling (Enlarged with text inside) */}
-          <rect x="105" y="70" width="35" height="50" rx="4" fill="#475569" stroke="#1e293b" strokeWidth="1.5" />
-          <text x="122.5" y="99" fill="#ffffff" fontSize="7.5" fontWeight="bold" textAnchor="middle">
+          {/* Flexible Coupling (Adjusted size to fit COUPLING text) */}
+          <rect x="105" y="70" width="52" height="50" rx="4" fill="#475569" stroke="#1e293b" strokeWidth="1.5" />
+          <text x="131" y="99" fill="#ffffff" fontSize="9" fontWeight="bold" textAnchor="middle">
             COUPLING
           </text>
 
           {/* Screw Shaft / Belt Rail */}
-          <rect x="140" y="90" width="359" height="10" fill="url(#screwThreads)" stroke="#64748b" strokeWidth="1" />
+          <rect x="157" y="90" width="342" height="10" fill="url(#screwThreads)" stroke="#64748b" strokeWidth="1" />
 
           {/* Bearing Support Blocks (No text labels) */}
-          <rect x="140" y="75" width="16" height="55" rx="2" fill="#334155" />
+          <rect x="157" y="75" width="16" height="55" rx="2" fill="#334155" />
           <rect x="483" y="75" width="16" height="55" rx="2" fill="#334155" />
 
           {/* Linear Guide Rail (No text label) */}
-          <rect x="156" y="122" width="327" height="8" fill="#94a3b8" />
+          <rect x="173" y="122" width="310" height="8" fill="#94a3b8" />
 
           {/* Moving Table (Load Mass) */}
           <g transform="translate(260, 0)">
