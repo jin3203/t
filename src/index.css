@@ -131,7 +131,7 @@ body {
 }
 
 .tab-btn {
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 0.95rem;
   border-radius: 6px;
   font-size: 0.825rem;
   font-weight: 600;
@@ -209,12 +209,19 @@ body {
   gap: 1rem;
 }
 
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
 .margin-top {
   margin-top: 1rem;
 }
 
 @media (max-width: 1100px) {
-  .grid-3col {
+  .grid-3col,
+  .grid-2col {
     grid-template-columns: 1fr;
   }
 }
@@ -302,14 +309,17 @@ body {
   background: #ffffff;
 }
 
-/* Excel Highlight Cells (Green matching reference screenshot) */
+/* Excel Highlight Cells */
 .highlight-cell {
-  background-color: #86efac !important; /* Green highlight like Excel sheet */
+  background-color: #86efac !important;
   padding: 0 !important;
+  position: relative;
 }
 
 .highlight-cell input,
-.highlight-cell select {
+.highlight-cell select,
+input.excel-input,
+select.excel-select {
   width: 100%;
   height: 100%;
   border: none;
@@ -320,11 +330,17 @@ body {
   font-size: 0.825rem;
   color: #064e3b;
   outline: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Yellow background when focused / editing as requested by user */
 .highlight-cell input:focus,
-.highlight-cell select:focus {
-  background: #4ade80;
+.highlight-cell select:focus,
+input:focus,
+select:focus {
+  background-color: #fef08a !important; /* Bright warm yellow background */
+  color: #713f12 !important;
+  box-shadow: inset 0 0 0 2px #eab308, 0 0 8px rgba(234, 179, 8, 0.4) !important;
 }
 
 .highlight-cell-green {
@@ -403,6 +419,196 @@ body {
   color: #991b1b;
 }
 
+/* Action CTA Banner ("결과 확인" Button) */
+.action-cta-banner {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 12px;
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+  border: 1px solid #334155;
+  margin-top: 1.25rem;
+}
+
+.cta-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #ffffff;
+}
+
+.cta-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+.cta-content h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.2rem;
+  color: #f8fafc;
+}
+
+.cta-content p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.btn-cta-submit {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.9rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-cta-submit:hover {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(22, 163, 74, 0.5);
+}
+
+.btn-cta-submit:active {
+  transform: translateY(0);
+}
+
+/* Results Screen Sub Header */
+.results-sub-header {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #cbd5e1;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sub-header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sub-header-title h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.sub-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Progress Bar Modal */
+.progress-modal-overlay {
+  z-index: 500;
+}
+
+.progress-card {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  padding: 1.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e2e8f0;
+}
+
+.progress-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.progress-icon {
+  width: 46px;
+  height: 46px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.spin-icon {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.progress-header h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.progress-subtitle {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #16a34a 100%);
+  border-radius: 999px;
+  transition: width 0.08s ease-out;
+}
+
+.progress-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.825rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.percent-val {
+  color: #2563eb;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
 /* Graph Styling */
 .graph-legend-info {
   display: flex;
@@ -420,12 +626,12 @@ body {
 }
 
 .custom-tooltip {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.92);
   color: #ffffff;
-  padding: 0.6rem 0.8rem;
-  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
   font-size: 0.775rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
 }
 
 .tooltip-title {
@@ -435,11 +641,114 @@ body {
   padding-bottom: 0.2rem;
 }
 
-/* 2D Visualizer */
+/* 2D / 3D Visualizer */
 .viz-body {
   background: #0f172a;
   border-radius: 0 0 8px 8px;
+  padding: 0.9rem;
+}
+
+.viz-3d-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.viz-img-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  max-height: 350px;
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+  border: 1px solid #334155;
+  border-radius: 10px;
   padding: 0.75rem;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+
+.viz-3d-img {
+  max-height: 320px;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.viz-img-container:hover .viz-3d-img {
+  transform: scale(1.015);
+}
+
+.viz-overlay-badge {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  font-family: var(--font-mono);
+  z-index: 2;
+}
+
+.badge-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+.badge-val {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.badge-motor {
+  top: 16px;
+  left: 18px;
+  border-left: 4px solid #3b82f6;
+}
+
+.badge-load {
+  top: 16px;
+  right: 18px;
+  border-left: 4px solid #10b981;
+}
+
+.badge-load .badge-val {
+  color: #34d399;
+}
+
+.badge-thrust {
+  bottom: 16px;
+  right: 18px;
+  border-left: 4px solid #ef4444;
+}
+
+.badge-thrust .badge-val {
+  color: #f87171;
+}
+
+.badge-ballscrew {
+  bottom: 16px;
+  left: 18px;
+  border-left: 4px solid #a855f7;
+}
+
+.badge-ballscrew .badge-val {
+  color: #c084fc;
 }
 
 .viz-svg {
@@ -455,13 +764,15 @@ body {
   margin-top: 0.5rem;
   padding-top: 0.4rem;
   border-top: 1px solid #334155;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 /* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -640,18 +951,100 @@ body {
   color: #94a3b8;
 }
 
-/* Utilities */
-.text-green { color: #166534; }
-.text-blue { color: #2563eb; }
-.text-purple { color: #9333ea; }
-.text-red { color: #dc2626; }
-.text-warn { color: #d97706; }
-.font-mono { font-family: var(--font-mono); }
-.font-bold { font-weight: 700; }
-.text-center { text-align: center; }
+/* Address Bar Header */
+.address-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.address-label {
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.address-display-box {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.address-val {
+  color: #0f172a;
+}
+
+.edit-icon {
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.address-display-box:hover .edit-icon {
+  color: #2563eb;
+}
+
+.address-edit-box {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.address-input {
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+  width: 280px;
+  outline: none;
+}
+
+.btn-icon-save {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-address-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.meta-label {
+  font-weight: 700;
+}
+
+.meta-val {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.report-addr-input {
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+  width: 320px;
+}
 
 @media print {
-  /* Hide background application, header, main dashboard, and modals */
   body {
     background: #ffffff !important;
     color: #000000 !important;
@@ -665,7 +1058,6 @@ body {
     display: none !important;
   }
 
-  /* Display only report-overlay and position it cleanly for print */
   .report-overlay {
     position: absolute !important;
     top: 0 !important;

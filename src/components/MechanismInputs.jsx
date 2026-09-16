@@ -1,12 +1,13 @@
 import React from 'react';
-import { Settings, Info } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { MATERIAL_DENSITIES } from '../data/motorPresets';
+import { handleEnterKeyNavigation } from '../utils/focusHelper';
 
 export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
   const handleChange = (field, value) => {
     setInputs((prev) => ({
       ...prev,
-      [field]: typeof value === 'string' ? value : parseFloat(value) || 0
+      [field]: value
     }));
   };
 
@@ -25,23 +26,6 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
       <div className="card-body">
         <table className="excel-table input-table">
           <tbody>
-            <tr>
-              <td className="field-label">Connection Type</td>
-              <td className="field-value highlight-cell" colSpan={2}>
-                <select
-                  value={mechanismType}
-                  onChange={(e) => handleChange('mechanismType', e.target.value)}
-                  className="excel-select"
-                >
-                  <option value="ballscrew_h">BallScrew (수평)</option>
-                  <option value="ballscrew_v">BallScrew (수직)</option>
-                  <option value="belt_h">Belt & Pulley (수평)</option>
-                  <option value="rack_pinion">Rack & Pinion</option>
-                  <option value="rotary">Rotary Table</option>
-                </select>
-              </td>
-            </tr>
-
             {isBallScrew && (
               <>
                 <tr>
@@ -50,11 +34,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                     <input
                       type="number"
                       step="0.001"
-                      value={inputs.lead}
+                      value={inputs.lead ?? 0.02}
                       onChange={(e) => handleChange('lead', e.target.value)}
+                      onKeyDown={handleEnterKeyNavigation}
                     />
                   </td>
-                  <td className="field-unit">m ({inputs.lead * 1000} mm)</td>
+                  <td className="field-unit">m ({(Number(inputs.lead || 0) * 1000).toFixed(1)} mm)</td>
                 </tr>
 
                 <tr>
@@ -63,8 +48,9 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                     <input
                       type="number"
                       step="0.1"
-                      value={inputs.length}
+                      value={inputs.length ?? 1.4}
                       onChange={(e) => handleChange('length', e.target.value)}
+                      onKeyDown={handleEnterKeyNavigation}
                     />
                   </td>
                   <td className="field-unit">m</td>
@@ -76,11 +62,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                     <input
                       type="number"
                       step="0.001"
-                      value={inputs.diameter}
+                      value={inputs.diameter ?? 0.02}
                       onChange={(e) => handleChange('diameter', e.target.value)}
+                      onKeyDown={handleEnterKeyNavigation}
                     />
                   </td>
-                  <td className="field-unit">m ({inputs.diameter * 1000} mm)</td>
+                  <td className="field-unit">m ({(Number(inputs.diameter || 0) * 1000).toFixed(1)} mm)</td>
                 </tr>
               </>
             )}
@@ -92,11 +79,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                   <input
                     type="number"
                     step="0.001"
-                    value={inputs.pulleyDiameter}
+                    value={inputs.pulleyDiameter ?? 0.05}
                     onChange={(e) => handleChange('pulleyDiameter', e.target.value)}
+                    onKeyDown={handleEnterKeyNavigation}
                   />
                 </td>
-                <td className="field-unit">m ({inputs.pulleyDiameter * 1000} mm)</td>
+                <td className="field-unit">m ({(Number(inputs.pulleyDiameter || 0) * 1000).toFixed(1)} mm)</td>
               </tr>
             )}
 
@@ -106,8 +94,9 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                 <input
                   type="number"
                   step="0.5"
-                  value={inputs.mass}
+                  value={inputs.mass ?? 8.0}
                   onChange={(e) => handleChange('mass', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">Kg</td>
@@ -119,11 +108,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                 <input
                   type="number"
                   step="0.01"
-                  value={inputs.friction}
+                  value={inputs.friction ?? 0.2}
                   onChange={(e) => handleChange('friction', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
-              <td className="field-unit">$\mu$</td>
+              <td className="field-unit">μ</td>
             </tr>
 
             <tr>
@@ -132,8 +122,9 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                 <input
                   type="number"
                   step="1"
-                  value={inputs.thrustForce}
+                  value={inputs.thrustForce ?? 0}
                   onChange={(e) => handleChange('thrustForce', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">N</td>
@@ -147,11 +138,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                   step="0.05"
                   min="0.1"
                   max="1.0"
-                  value={inputs.efficiency}
+                  value={inputs.efficiency ?? 0.8}
                   onChange={(e) => handleChange('efficiency', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
-              <td className="field-unit">$\eta$ ({Math.round(inputs.efficiency * 100)}%)</td>
+              <td className="field-unit">η ({Math.round((Number(inputs.efficiency) || 0) * 100)}%)</td>
             </tr>
 
             <tr>
@@ -161,8 +153,9 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                   type="number"
                   step="0.1"
                   min="1.0"
-                  value={inputs.safetyFactor}
+                  value={inputs.safetyFactor ?? 1.2}
                   onChange={(e) => handleChange('safetyFactor', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">배</td>
@@ -174,11 +167,12 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                 <input
                   type="number"
                   step="0.0001"
-                  value={inputs.addInertia}
+                  value={inputs.addInertia ?? 0}
                   onChange={(e) => handleChange('addInertia', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
-              <td className="field-unit">Kgm^2</td>
+              <td className="field-unit">Kgm²</td>
             </tr>
 
             <tr>
@@ -188,18 +182,19 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                   type="number"
                   step="0.1"
                   min="0.1"
-                  value={inputs.gearRatio}
+                  value={inputs.gearRatio ?? 1.0}
                   onChange={(e) => handleChange('gearRatio', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">: 1</td>
             </tr>
 
             <tr>
-              <td className="field-label">Connection 밀도 (재질)</td>
+              <td className="field-label">기구 재질 (밀도)</td>
               <td className="field-value highlight-cell">
                 <select
-                  value={inputs.densityMaterial}
+                  value={inputs.densityMaterial || 'Steel'}
                   onChange={(e) => {
                     const matKey = e.target.value;
                     const den = MATERIAL_DENSITIES[matKey]?.density || 7870;
@@ -209,6 +204,7 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                       density: den
                     }));
                   }}
+                  onKeyDown={handleEnterKeyNavigation}
                   className="excel-select"
                 >
                   {Object.entries(MATERIAL_DENSITIES).map(([key, item]) => (
@@ -218,7 +214,7 @@ export default function MechanismInputs({ inputs, setInputs, mechanismType }) {
                   ))}
                 </select>
               </td>
-              <td className="field-unit">{inputs.density} kg/m³</td>
+              <td className="field-unit">{inputs.density || 7870} kg/m³</td>
             </tr>
           </tbody>
         </table>

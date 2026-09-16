@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calculator } from 'lucide-react';
+import { safeFixed, safeNum } from '../utils/motorCalculations';
 
 export default function CalculationResults({ results }) {
   return (
@@ -17,7 +18,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">소요 가속 토크 (Accel Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.reqAccelTorque ? results.reqAccelTorque.toFixed(2) : '0.19'}
+                {safeFixed(results?.reqAccelTorque, 2, '0.19')}
               </td>
               <td className="field-unit">Nm</td>
             </tr>
@@ -25,7 +26,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">소요 감속 토크 (Decel Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.reqDecelTorque ? results.reqDecelTorque.toFixed(2) : '-0.04'}
+                {safeFixed(results?.reqDecelTorque, 2, '-0.04')}
               </td>
               <td className="field-unit">Nm</td>
             </tr>
@@ -33,7 +34,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">토크 실효치 (RMS Torque)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.rmsTorque ? results.rmsTorque.toFixed(2) : '0.09'}
+                {safeFixed(results?.rmsTorque, 2, '0.09')}
               </td>
               <td className="field-unit">Nm</td>
             </tr>
@@ -41,7 +42,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label">관성비 (Inertia Ratio)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.inertiaRatio ? results.inertiaRatio.toFixed(2) : '7.26'}
+                {safeFixed(results?.inertiaRatio, 2, '7.26')}
               </td>
               <td className="field-unit">배</td>
             </tr>
@@ -49,7 +50,7 @@ export default function CalculationResults({ results }) {
             <tr>
               <td className="field-label font-bold">Max Speed (모터 최대 회전수)</td>
               <td className="field-value result-highlight font-mono font-bold">
-                {results.maxMotorRPM ? Math.round(results.maxMotorRPM) : '1500'}
+                {Math.round(safeNum(results?.maxMotorRPM, 1500))}
               </td>
               <td className="field-unit">RPM</td>
             </tr>

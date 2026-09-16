@@ -2284,6 +2284,7 @@ export const MECHANISM_TYPES = [
   { id: 'ballscrew_h', name: '수평 볼스크류 (BallScrew Horizontal)', icon: 'MoveHorizontal' },
   { id: 'ballscrew_v', name: '수직 볼스크류 (BallScrew Vertical)', icon: 'MoveVertical' },
   { id: 'belt_h', name: '수평 벨트 (Belt Drive Horizontal)', icon: 'Repeat' },
+  { id: 'direct', name: '직결 구동 (Direct Coupling)', icon: 'Zap' },
   { id: 'rack_pinion', name: '랙 & 피니언 (Rack & Pinion)', icon: 'Cog' },
   { id: 'rotary', name: '회전 기구부 (Rotary Table)', icon: 'RotateCw' }
 ];

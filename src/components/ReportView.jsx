@@ -1,9 +1,19 @@
-import React from 'react';
-import { Printer, X, CheckCircle2, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Printer, X, CheckCircle2, AlertTriangle, MapPin, Edit3, Check } from 'lucide-react';
+import { safeFixed, safeNum } from '../utils/motorCalculations';
+import { MECHANISM_TYPES } from '../data/motorPresets';
 
-export default function ReportView({ inputs, motor, results, onClose }) {
+export default function ReportView({ inputs, motor, results, locationAddress, onUpdateAddress, onClose }) {
+  const [isEditingAddr, setIsEditingAddr] = useState(false);
+  const [tempAddr, setTempAddr] = useState(locationAddress || '');
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSaveAddr = () => {
+    onUpdateAddress(tempAddr);
+    setIsEditingAddr(false);
   };
 
   const currentDate = new Date().toLocaleDateString('ko-KR', {
@@ -11,6 +21,9 @@ export default function ReportView({ inputs, motor, results, onClose }) {
     month: 'long',
     day: 'numeric'
   });
+
+  const mechObj = MECHANISM_TYPES.find(m => m.id === inputs.mechanismType);
+  const mechName = mechObj ? mechObj.name : inputs.mechanismType;
 
   return (
     <div className="report-overlay">
@@ -31,7 +44,30 @@ export default function ReportView({ inputs, motor, results, onClose }) {
           <p className="report-subtitle">Motor & Drive Sizing Verification Report</p>
           <div className="report-meta">
             <span>검토 일자: {currentDate}</span>
-            <span>검토 기구: 수평 볼스크류 기구부</span>
+            <span>검토 기구: {mechName}</span>
+          </div>
+          <div className="report-address-line">
+            <MapPin size={14} className="text-blue" />
+            <span className="meta-label">확인 주소지:</span>
+            {isEditingAddr ? (
+              <span className="no-print-inline">
+                <input
+                  type="text"
+                  value={tempAddr}
+                  onChange={(e) => setTempAddr(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveAddr(); }}
+                  className="report-addr-input"
+                  autoFocus
+                />
+                <button className="btn-icon-save" onClick={handleSaveAddr}>
+                  <Check size={14} />
+                </button>
+              </span>
+            ) : (
+              <span className="meta-val" onClick={() => { setTempAddr(locationAddress); setIsEditingAddr(true); }} style={{ cursor: 'pointer' }}>
+                {locationAddress} <Edit3 size={12} className="no-print edit-icon" title="주소지 편집" />
+              </span>
+            )}
           </div>
         </div>
 
@@ -55,12 +91,19 @@ export default function ReportView({ inputs, motor, results, onClose }) {
             <h3>1. 기구 조건 (Mechanism)</h3>
             <table className="report-table">
               <tbody>
-                <tr><td>Connection Type</td><td>BallScrew</td></tr>
-                <tr><td>Lead</td><td>{inputs.lead} m ({inputs.lead * 1000} mm)</td></tr>
-                <tr><td>Screw Length / Dia</td><td>{inputs.length} m / {inputs.diameter} m</td></tr>
+                <tr><td>기구 방식 (Mechanism)</td><td>{mechName}</td></tr>
+                {inputs.mechanismType.startsWith('ballscrew') && (
+                  <>
+                    <tr><td>Lead</td><td>{inputs.lead} m ({(Number(inputs.lead || 0) * 1000).toFixed(1)} mm)</td></tr>
+                    <tr><td>Screw Length / Dia</td><td>{inputs.length} m / {inputs.diameter} m</td></tr>
+                  </>
+                )}
+                {(inputs.mechanismType === 'belt_h' || inputs.mechanismType === 'rack_pinion') && (
+                  <tr><td>Pulley / Pinion Dia</td><td>{inputs.pulleyDiameter} m</td></tr>
+                )}
                 <tr><td>Load Mass (부하 질량)</td><td>{inputs.mass} kg</td></tr>
                 <tr><td>Friction (마찰 계수)</td><td>{inputs.friction}</td></tr>
-                <tr><td>Efficiency (기계효율)</td><td>{inputs.efficiency * 100}%</td></tr>
+                <tr><td>Efficiency (기계효율)</td><td>{(Number(inputs.efficiency) || 0.8) * 100}%</td></tr>
                 <tr><td>Safety Factor (안전율)</td><td>{inputs.safetyFactor} 배</td></tr>
               </tbody>
             </table>
@@ -75,7 +118,7 @@ export default function ReportView({ inputs, motor, results, onClose }) {
                 <tr><td>Move Time (이동시간)</td><td>{inputs.moveTime} s</td></tr>
                 <tr><td>Accel / Decel Time</td><td>{inputs.accelTime} s / {inputs.decelTime} s</td></tr>
                 <tr><td>Dwell Time (휴지시간)</td><td>{inputs.dwellTime} s</td></tr>
-                <tr><td>Total Cycle Time</td><td>{results.cycleTime?.toFixed(2)} s</td></tr>
+                <tr><td>Total Cycle Time</td><td>{safeFixed(results.cycleTime, 2)} s</td></tr>
               </tbody>
             </table>
           </div>
@@ -102,9 +145,9 @@ export default function ReportView({ inputs, motor, results, onClose }) {
                 <td>{motor.driveModel}</td>
                 <td>{motor.ratedSpeed} RPM</td>
                 <td>{motor.maxSpeed} RPM</td>
-                <td>{Number(motor.ratedTorque).toFixed(2)} N·m</td>
-                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
-                <td>{(motor.rotorInertia * 1e4).toFixed(2)} ×10⁻⁴ kg·m²</td>
+                <td>{safeFixed(motor.ratedTorque, 2)} N·m</td>
+                <td>{safeFixed(motor.maxTorque, 2)} N·m</td>
+                <td>{((motor.rotorInertia || 0.35e-4) * 1e4).toFixed(2)} ×10⁻⁴ kg·m²</td>
               </tr>
             </tbody>
           </table>
@@ -126,38 +169,48 @@ export default function ReportView({ inputs, motor, results, onClose }) {
             <tbody>
               <tr>
                 <td>소요 가속 토크 (Accel Torque)</td>
-                <td>{results.reqAccelTorque?.toFixed(2)} N·m</td>
-                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
-                <td>{results.checks?.accelTorque?.pct?.toFixed(2)}%</td>
-                <td className="font-bold text-green">OK</td>
+                <td>{safeFixed(results.reqAccelTorque, 2)} N·m</td>
+                <td>{safeFixed(motor.maxTorque, 2)} N·m</td>
+                <td>{safeFixed(results.checks?.accelTorque?.pct, 2)}%</td>
+                <td className={`font-bold ${results.checks?.accelTorque?.ok ? 'text-green' : 'text-red'}`}>
+                  {results.checks?.accelTorque?.ok ? 'OK' : 'NG'}
+                </td>
               </tr>
               <tr>
                 <td>소요 감속 토크 (Decel Torque)</td>
-                <td>{results.reqDecelTorque?.toFixed(2)} N·m</td>
-                <td>{Number(motor.maxTorque).toFixed(2)} N·m</td>
-                <td>{results.checks?.decelTorque?.pct?.toFixed(2)}%</td>
-                <td className="font-bold text-green">OK</td>
+                <td>{safeFixed(results.reqDecelTorque, 2)} N·m</td>
+                <td>{safeFixed(motor.maxTorque, 2)} N·m</td>
+                <td>{safeFixed(results.checks?.decelTorque?.pct, 2)}%</td>
+                <td className={`font-bold ${results.checks?.decelTorque?.ok ? 'text-green' : 'text-red'}`}>
+                  {results.checks?.decelTorque?.ok ? 'OK' : 'NG'}
+                </td>
               </tr>
               <tr>
                 <td>토크 실효치 (RMS Torque)</td>
-                <td>{results.rmsTorque?.toFixed(2)} N·m</td>
-                <td>{Number(motor.ratedTorque).toFixed(2)} N·m</td>
-                <td>{results.checks?.rmsTorque?.pct?.toFixed(2)}%</td>
-                <td className="font-bold text-green">OK</td>
+                <td>{safeFixed(results.rmsTorque, 2)} N·m</td>
+                <td>{safeFixed(motor.ratedTorque, 2)} N·m</td>
+                <td>{safeFixed(results.checks?.rmsTorque?.pct, 2)}%</td>
+                <td className={`font-bold ${results.checks?.rmsTorque?.ok ? 'text-green' : 'text-red'}`}>
+                  {results.checks?.rmsTorque?.ok ? 'OK' : 'NG'}
+                </td>
               </tr>
               <tr>
                 <td>부하 관성비 (Inertia Ratio)</td>
-                <td>{results.inertiaRatio?.toFixed(2)} 배</td>
+                <td>{safeFixed(results.inertiaRatio, 2)} 배</td>
                 <td>30 배 이하 권장</td>
                 <td>-</td>
-                <td className="font-bold text-green">OK</td>
+                <td className={`font-bold ${results.checks?.inertiaRatio?.ok ? 'text-green' : 'text-red'}`}>
+                  {results.checks?.inertiaRatio?.ok ? 'OK' : 'NG'}
+                </td>
               </tr>
               <tr>
                 <td>모터 최고 회전수 (Max Speed)</td>
-                <td>{Math.round(results.maxMotorRPM || 0)} RPM</td>
+                <td>{Math.round(safeNum(results.maxMotorRPM, 0))} RPM</td>
                 <td>{motor.maxSpeed} RPM</td>
-                <td>{((results.maxMotorRPM / motor.maxSpeed) * 100).toFixed(1)}%</td>
-                <td className="font-bold text-green">OK</td>
+                <td>{safeFixed(results.checks?.maxSpeed?.pct, 1)}%</td>
+                <td className={`font-bold ${results.checks?.maxSpeed?.ok ? 'text-green' : 'text-red'}`}>
+                  {results.checks?.maxSpeed?.ok ? 'OK' : 'NG'}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -170,7 +223,7 @@ export default function ReportView({ inputs, motor, results, onClose }) {
             <tbody>
               <tr>
                 <td>회생 에너지 (Regen Power)</td>
-                <td className="font-mono">{results.regen?.regenEnergyPerCycle?.toFixed(2)} W</td>
+                <td className="font-mono">{safeFixed(results.regen?.regenEnergyPerCycle, 2)} W</td>
                 <td>내부 Shunt 저항/용량</td>
                 <td className="font-mono">{results.regen?.internalShuntRes} Ω / {results.regen?.internalShuntCap} W</td>
                 <td>외부 Shunt 필요 여부</td>
@@ -181,7 +234,7 @@ export default function ReportView({ inputs, motor, results, onClose }) {
         </div>
 
         <div className="report-footer">
-          <p>본 검토 보고서는 공학적 자동 계산 수식에 기반하여 작성되었습니다.</p>
+          <p>확인 주소지: {locationAddress} | 본 검토 보고서는 공학적 자동 계산 수식에 기반하여 작성되었습니다.</p>
         </div>
       </div>
     </div>

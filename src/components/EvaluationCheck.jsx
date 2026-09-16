@@ -1,8 +1,9 @@
 import React from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
+import { safeFixed } from '../utils/motorCalculations';
 
 export default function EvaluationCheck({ results }) {
-  const checks = results.checks || {
+  const checks = results?.checks || {
     accelTorque: { ok: true, pct: 14.62 },
     decelTorque: { ok: true, pct: -2.83 },
     rmsTorque: { ok: true, pct: 6.97 },
@@ -10,12 +11,14 @@ export default function EvaluationCheck({ results }) {
     maxSpeed: { ok: true, pct: 25.0 }
   };
 
+  const isOverallOk = results?.overallOk ?? true;
+
   return (
     <div className="card check-card">
       <div className="card-header border-green">
         <div className="card-title">
           <CheckCircle2 size={18} className="text-green" />
-          <h2>* 결과 검토 (Result_OK_NG / Check)</h2>
+          <h2>* 검토 결과 (Result_OK_NG / Check)</h2>
         </div>
       </div>
 
@@ -31,54 +34,58 @@ export default function EvaluationCheck({ results }) {
           <tbody>
             <tr>
               <td className="field-label">가속 토크 검토 (Accel Torque)</td>
-              <td className={`text-center font-bold status-cell ${checks.accelTorque.ok ? 'ok-badge' : 'ng-badge'}`}>
-                {checks.accelTorque.ok ? 'OK' : 'NG'}
+              <td className={`text-center font-bold status-cell ${checks.accelTorque?.ok ? 'ok-badge' : 'ng-badge'}`}>
+                {checks.accelTorque?.ok ? 'OK' : 'NG'}
               </td>
               <td className="field-value font-mono text-center">
-                {checks.accelTorque.pct !== undefined ? `${checks.accelTorque.pct.toFixed(2)}%` : '14.62%'}
+                {safeFixed(checks.accelTorque?.pct, 2, '0.00')}%
               </td>
             </tr>
 
             <tr>
               <td className="field-label">감속 토크 검토 (Decel Torque)</td>
-              <td className={`text-center font-bold status-cell ${checks.decelTorque.ok ? 'ok-badge' : 'ng-badge'}`}>
-                {checks.decelTorque.ok ? 'OK' : 'NG'}
+              <td className={`text-center font-bold status-cell ${checks.decelTorque?.ok ? 'ok-badge' : 'ng-badge'}`}>
+                {checks.decelTorque?.ok ? 'OK' : 'NG'}
               </td>
               <td className="field-value font-mono text-center">
-                {checks.decelTorque.pct !== undefined ? `${checks.decelTorque.pct.toFixed(2)}%` : '-2.83%'}
+                {safeFixed(checks.decelTorque?.pct, 2, '0.00')}%
               </td>
             </tr>
 
             <tr>
               <td className="field-label">토크 실효치 검토 (RMS Torque)</td>
-              <td className={`text-center font-bold status-cell ${checks.rmsTorque.ok ? 'ok-badge' : 'ng-badge'}`}>
-                {checks.rmsTorque.ok ? 'OK' : 'NG'}
+              <td className={`text-center font-bold status-cell ${checks.rmsTorque?.ok ? 'ok-badge' : 'ng-badge'}`}>
+                {checks.rmsTorque?.ok ? 'OK' : 'NG'}
               </td>
               <td className="field-value font-mono text-center">
-                {checks.rmsTorque.pct !== undefined ? `${checks.rmsTorque.pct.toFixed(2)}%` : '6.97%'}
+                {safeFixed(checks.rmsTorque?.pct, 2, '0.00')}%
               </td>
             </tr>
 
             <tr>
               <td className="field-label">관성비 검토 (Inertia Ratio)</td>
-              <td className={`text-center font-bold status-cell ${checks.inertiaRatio.ok ? 'ok-badge' : 'ng-badge'}`}>
-                {checks.inertiaRatio.ok ? 'OK' : 'NG'}
+              <td className={`text-center font-bold status-cell ${checks.inertiaRatio?.ok ? 'ok-badge' : 'ng-badge'}`}>
+                {checks.inertiaRatio?.ok ? 'OK' : 'NG'}
               </td>
-              <td className="field-value font-mono text-center">*</td>
+              <td className="field-value font-mono text-center">
+                {safeFixed(checks.inertiaRatio?.val, 2, '0.00')} 배
+              </td>
             </tr>
 
             <tr>
               <td className="field-label">최대 속도 검토 (Max Speed)</td>
-              <td className={`text-center font-bold status-cell ${checks.maxSpeed.ok ? 'ok-badge' : 'ng-badge'}`}>
-                {checks.maxSpeed.ok ? 'OK' : 'NG'}
+              <td className={`text-center font-bold status-cell ${checks.maxSpeed?.ok ? 'ok-badge' : 'ng-badge'}`}>
+                {checks.maxSpeed?.ok ? 'OK' : 'NG'}
               </td>
-              <td className="field-value font-mono text-center">*</td>
+              <td className="field-value font-mono text-center">
+                {safeFixed(checks.maxSpeed?.pct, 1, '0.0')}%
+              </td>
             </tr>
           </tbody>
         </table>
 
-        <div className={`overall-banner ${results.overallOk ? 'banner-ok' : 'banner-ng'}`}>
-          {results.overallOk ? (
+        <div className={`overall-banner ${isOverallOk ? 'banner-ok' : 'banner-ng'}`}>
+          {isOverallOk ? (
             <>
               <CheckCircle2 size={20} />
               <span>[최종 판정] 모터 및 드라이브 용량 선정 <strong>적합 (OK)</strong></span>

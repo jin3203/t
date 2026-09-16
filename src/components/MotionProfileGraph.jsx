@@ -6,26 +6,26 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
-import { LineChart as ChartIcon } from 'lucide-react';
+import { Activity } from 'lucide-react';
+import { safeNum, safeFixed } from '../utils/motorCalculations';
 
-export default function MotionProfileGraph({ points, motor }) {
+export default function MotionProfileGraph({ points }) {
   if (!points || points.length === 0) return null;
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
         <div className="custom-tooltip">
-          <p className="tooltip-title font-bold">시간: {data.timeMs.toFixed(0)} ms ({data.phase || ''})</p>
-          <p className="text-blue font-mono">
-            속도 (Velocity): <strong>{data.velocity.toFixed(3)} m/s</strong> ({Math.round(data.rpm)} RPM)
+          <p className="tooltip-title font-bold">시간: {safeNum(data.timeMs).toFixed(0)} ms ({data.phase || ''})</p>
+          <p className="text-blue font-mono" style={{ color: '#2563eb' }}>
+            부하 속도 (Velocity): <strong>{safeFixed(data.velocity, 3)} m/s</strong>
           </p>
-          <p className="text-red font-mono">
-            토크 (Torque): <strong>{data.torqueNm.toFixed(2)} N·m</strong> ({data.torquePct.toFixed(2)}%)
+          <p className="text-purple font-mono" style={{ color: '#9333ea' }}>
+            모터 회전수 (RPM): <strong>{Math.round(safeNum(data.rpm))} RPM</strong>
           </p>
         </div>
       );
@@ -34,21 +34,21 @@ export default function MotionProfileGraph({ points, motor }) {
   };
 
   return (
-    <div className="card graph-card">
+    <div className="card graph-card" style={{ height: '100%' }}>
       <div className="card-header border-blue">
         <div className="card-title">
-          <ChartIcon size={18} className="text-blue" />
-          <h2>구동 및 토크 프로파일 그래프 (Motion Velocity & Torque Profile)</h2>
+          <Activity size={18} className="text-blue" />
+          <h2>모션 프로파일 그래프 (Velocity & Speed Profile)</h2>
         </div>
         <div className="graph-legend-info">
-          <span className="legend-item blue-dot">■ Velocity [m/sec] (실선)</span>
-          <span className="legend-item red-dot">◆ Torque [N·m] (점선)</span>
+          <span className="legend-item blue-dot">■ Velocity [m/s]</span>
+          <span className="legend-item purple-dot" style={{ color: '#9333ea' }}>■ Motor Speed [RPM]</span>
         </div>
       </div>
 
-      <div className="card-body graph-container">
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={points} margin={{ top: 20, right: 40, left: 10, bottom: 25 }}>
+      <div className="card-body graph-container" style={{ minHeight: '300px' }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={points} margin={{ top: 20, right: 35, left: 10, bottom: 25 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e5ed" />
             <XAxis
               dataKey="timeMs"
@@ -60,46 +60,45 @@ export default function MotionProfileGraph({ points, motor }) {
             <YAxis
               yAxisId="left"
               orientation="left"
-              stroke="#1e40af"
-              domain={[0, 'dataMax + 0.1']}
-              label={{ value: 'Velocity [m/sec]', angle: -90, position: 'insideLeft', offset: 10, fill: '#1e40af', fontSize: 12 }}
+              stroke="#2563eb"
+              domain={[0, 'auto']}
+              label={{ value: 'Velocity [m/sec]', angle: -90, position: 'insideLeft', offset: 10, fill: '#2563eb', fontSize: 12 }}
               tick={{ fontSize: 11 }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
-              stroke="#dc2626"
-              domain={['auto', 'auto']}
-              label={{ value: 'Torque [N·m]', angle: 90, position: 'insideRight', offset: 10, fill: '#dc2626', fontSize: 12 }}
-              tickFormatter={(v) => typeof v === 'number' ? v.toFixed(2) : v}
+              stroke="#9333ea"
+              domain={[0, 'auto']}
+              label={{ value: 'Motor Speed [RPM]', angle: 90, position: 'insideRight', offset: 10, fill: '#9333ea', fontSize: 12 }}
               tick={{ fontSize: 11 }}
             />
             <Tooltip content={<CustomTooltip />} />
-            <ReferenceLine yAxisId="right" y={0} stroke="#94a3b8" strokeDasharray="2 2" />
+            <ReferenceLine yAxisId="left" y={0} stroke="#94a3b8" strokeDasharray="2 2" />
 
-            {/* Velocity Line: Solid Navy Blue */}
+            {/* Velocity Line (Blue) */}
             <Line
               yAxisId="left"
               type="linear"
               dataKey="velocity"
               name="Velocity [m/s]"
-              stroke="#1d4ed8"
+              stroke="#2563eb"
               strokeWidth={3}
-              dot={{ r: 3, fill: '#1d4ed8' }}
-              activeDot={{ r: 6 }}
+              dot={{ r: 4, fill: '#2563eb' }}
+              activeDot={{ r: 7 }}
             />
 
-            {/* Torque Line: Dashed Red */}
+            {/* Motor RPM Line (Purple) */}
             <Line
               yAxisId="right"
               type="linear"
-              dataKey="torqueNm"
-              name="Torque [N·m]"
-              stroke="#dc2626"
+              dataKey="rpm"
+              name="Speed [RPM]"
+              stroke="#9333ea"
               strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={{ r: 4, fill: '#dc2626', stroke: '#ffffff', strokeWidth: 1.5 }}
-              activeDot={{ r: 7 }}
+              strokeDasharray="4 4"
+              dot={{ r: 3, fill: '#9333ea' }}
+              activeDot={{ r: 6 }}
             />
           </LineChart>
         </ResponsiveContainer>

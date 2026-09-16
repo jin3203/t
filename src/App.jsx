@@ -7,14 +7,18 @@ import CalculationResults from './components/CalculationResults';
 import EvaluationCheck from './components/EvaluationCheck';
 import RegenerationCheck from './components/RegenerationCheck';
 import MotionProfileGraph from './components/MotionProfileGraph';
+import TorqueProfileGraph from './components/TorqueProfileGraph';
 import MechanismVisualizer from './components/MechanismVisualizer';
 import FormulaModal from './components/FormulaModal';
 import AddMotorModal from './components/AddMotorModal';
 import RawDataModal from './components/RawDataModal';
 import ReportView from './components/ReportView';
+import ProgressBarModal from './components/ProgressBarModal';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import { MOTOR_PRESETS } from './data/motorPresets';
 import { calculateMotorSizing } from './utils/motorCalculations';
+import { ArrowRight, ArrowLeft, RotateCcw, Download, Sparkles } from 'lucide-react';
 
 const DEFAULT_INPUTS = {
   mechanismType: 'ballscrew_h',
@@ -43,12 +47,36 @@ const DEFAULT_INPUTS = {
 };
 
 const LOCAL_STORAGE_CUSTOM_MOTORS = 'motor_sizing_custom_motors_v1';
+const LOCAL_STORAGE_ADDRESS = 'motor_sizing_location_address_v1';
 
 export default function App() {
   const [mechanismType, setMechanismType] = useState('ballscrew_h');
   const [inputs, setInputs] = useState(DEFAULT_INPUTS);
 
-  // Motor catalog state (Preset list + localStorage saved custom motors)
+  // View state: 'input' (main input screen) | 'results' (results review screen)
+  const [viewMode, setViewMode] = useState('input');
+  // Calculation progress modal
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Address state for confirmation location
+  const [locationAddress, setLocationAddress] = useState(() => {
+    try {
+      return localStorage.getItem(LOCAL_STORAGE_ADDRESS) || '서울특별시 금천구 가산디지털1로 168 (엔지니어링 센터)';
+    } catch {
+      return '서울특별시 금천구 가산디지털1로 168 (엔지니어링 센터)';
+    }
+  });
+
+  const handleUpdateAddress = (newAddr) => {
+    setLocationAddress(newAddr);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_ADDRESS, newAddr);
+    } catch (e) {
+      console.error('Failed to save address:', e);
+    }
+  };
+
+  // Motor catalog state
   const [motorCatalog, setMotorCatalog] = useState(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_CUSTOM_MOTORS);
@@ -64,7 +92,7 @@ export default function App() {
 
   const [motor, setMotor] = useState(MOTOR_PRESETS.find(p => p.id === 'CSMA_04B') || MOTOR_PRESETS[0]);
 
-  // Modals & Views
+  // Modals
   const [showFormulas, setShowFormulas] = useState(false);
   const [showAddMotor, setShowAddMotor] = useState(false);
   const [showRawData, setShowRawData] = useState(false);
@@ -80,9 +108,9 @@ export default function App() {
     setMechanismType('ballscrew_h');
     setInputs(DEFAULT_INPUTS);
     setMotor(MOTOR_PRESETS.find(p => p.id === 'CSMA_04B') || MOTOR_PRESETS[0]);
+    setViewMode('input');
   };
 
-  // Add custom motor handler
   const handleSaveMotor = (newMotor) => {
     setMotorCatalog((prev) => {
       const updated = [newMotor, ...prev];
@@ -90,14 +118,13 @@ export default function App() {
         const customOnly = updated.filter(m => m.id.startsWith('CUSTOM_'));
         localStorage.setItem(LOCAL_STORAGE_CUSTOM_MOTORS, JSON.stringify(customOnly));
       } catch (e) {
-        console.error('Failed to save custom motor to localStorage:', e);
+        console.error('Failed to save custom motor:', e);
       }
       return updated;
     });
     setMotor(newMotor);
   };
 
-  // Raw data direct update handler
   const handleUpdateCatalog = (newCatalog) => {
     setMotorCatalog(newCatalog);
     if (newCatalog.length > 0) {
@@ -107,77 +134,165 @@ export default function App() {
       const customOnly = newCatalog.filter(m => m.id.startsWith('CUSTOM_'));
       localStorage.setItem(LOCAL_STORAGE_CUSTOM_MOTORS, JSON.stringify(customOnly));
     } catch (e) {
-      console.error('Failed to save updated catalog:', e);
+      console.error('Failed to save catalog:', e);
     }
   };
 
-  // Perform engineering physics calculation whenever inputs change
+  // Perform calculations dynamically with error protection
   const results = useMemo(() => {
-    return calculateMotorSizing({
-      ...inputs,
-      mechanismType,
-      motor
-    });
+    try {
+      return calculateMotorSizing({
+        ...inputs,
+        mechanismType,
+        motor
+      });
+    } catch (e) {
+      console.error("Calculation Error:", e);
+      return calculateMotorSizing({
+        ...DEFAULT_INPUTS,
+        mechanismType: 'ballscrew_h',
+        motor: MOTOR_PRESETS[0]
+      });
+    }
   }, [inputs, mechanismType, motor]);
+
+  // Trigger result check with progress bar
+  const handleCheckResultsClick = () => {
+    setIsCalculating(true);
+  };
+
+  const handleProgressComplete = () => {
+    setIsCalculating(false);
+    setViewMode('results');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="app-layout">
-      {/* Header with mechanism tabs */}
+      {/* Top Navigation Header */}
       <Header
         mechanismType={mechanismType}
         setMechanismType={handleMechanismChange}
+        locationAddress={locationAddress}
+        onUpdateAddress={handleUpdateAddress}
         onResetDefaults={handleResetDefaults}
         onOpenFormulas={() => setShowFormulas(true)}
         onOpenRawData={() => setShowRawData(true)}
         onExportReport={() => setShowReport(true)}
       />
 
-      {/* Main Dashboard Grid */}
-      <main className="dashboard-content">
-        {/* Top 3 Input Columns (Exact match with spreadsheet top 3 boxes) */}
-        <div className="grid-3col">
-          <MechanismInputs
-            inputs={inputs}
-            setInputs={setInputs}
-            mechanismType={mechanismType}
-          />
-          <MotionInputs
-            inputs={inputs}
-            setInputs={setInputs}
-            results={results}
-          />
-          <MotorSelect
-            motor={motor}
-            setMotor={setMotor}
-            motorCatalog={motorCatalog}
-            onOpenAddMotor={() => setShowAddMotor(true)}
-          />
-        </div>
+      <ErrorBoundary>
+        {/* Main Workspace View */}
+        <main className="dashboard-content">
+          {viewMode === 'input' ? (
+            /* ============================================================ */
+            /* SCREEN 1: Entire Input & Motion Profile Screen              */
+            /* ============================================================ */
+            <div className="view-container input-view-container">
+              {/* Row 1: Mechanism Conditions, Motion Conditions, Motion Profile Graph */}
+              <div className="grid-3col">
+                <MechanismInputs
+                  inputs={inputs}
+                  setInputs={setInputs}
+                  mechanismType={mechanismType}
+                />
+                <MotionInputs
+                  inputs={inputs}
+                  setInputs={setInputs}
+                  results={results}
+                />
+                <MotionProfileGraph
+                  points={results.profilePoints}
+                />
+              </div>
 
-        {/* Middle 3 Result Columns (Exact match with spreadsheet middle 3 boxes) */}
-        <div className="grid-3col margin-top">
-          <CalculationResults results={results} />
-          <EvaluationCheck results={results} />
-          <RegenerationCheck regen={results.regen} />
-        </div>
+              {/* Row 2: Motor/Driver Selection, Mechanism Visualizer */}
+              <div className="grid-2col margin-top">
+                <MotorSelect
+                  motor={motor}
+                  setMotor={setMotor}
+                  motorCatalog={motorCatalog}
+                  onOpenAddMotor={() => setShowAddMotor(true)}
+                />
+                <MechanismVisualizer
+                  inputs={{ ...inputs, motorModel: motor.model }}
+                  results={results}
+                  mechanismType={mechanismType}
+                />
+              </div>
 
-        {/* Interactive 2D Mechanism Visualizer */}
-        <div className="margin-top">
-          <MechanismVisualizer
-            inputs={{ ...inputs, motorModel: motor.model }}
-            results={results}
-            mechanismType={mechanismType}
-          />
-        </div>
+              {/* Row 3: Prominent "결과 확인" Action CTA Button */}
+              <div className="action-cta-banner margin-top">
+                <div className="cta-content">
+                  <div className="cta-icon">
+                    <Sparkles size={28} />
+                  </div>
+                  <div>
+                    <h3>입력한 조건으로 모터 용량 정밀 검토 실행</h3>
+                    <p>기구 파라미터, 속도 프로파일, 모터 사양을 기반으로 가/감속 및 RMS 토크, 회생 저항을 검토합니다.</p>
+                  </div>
+                </div>
+                <button
+                  className="btn-cta-submit"
+                  onClick={handleCheckResultsClick}
+                >
+                  <span>결과 확인</span>
+                  <ArrowRight size={22} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* ============================================================ */
+            /* SCREEN 2: Calculation Results, Checks, & Torque Graph Screen */
+            /* ============================================================ */
+            <div className="view-container results-view-container">
+              {/* Sub Header / Action Toolbar for Results Screen */}
+              <div className="results-sub-header">
+                <div className="sub-header-title">
+                  <button
+                    className="btn btn-outline"
+                    onClick={() => setViewMode('input')}
+                  >
+                    <ArrowLeft size={18} />
+                    <span>← 입력 조건 수정하기</span>
+                  </button>
+                  <h2>모터 용량 선정 계산 및 최종 검토 결과</h2>
+                </div>
+                <div className="sub-header-actions">
+                  <button className="btn btn-outline" onClick={handleCheckResultsClick}>
+                    <RotateCcw size={16} />
+                    <span>결과 재검토 (Re-check)</span>
+                  </button>
+                  <button className="btn btn-primary" onClick={() => setShowReport(true)}>
+                    <Download size={16} />
+                    <span>검토 보고서 (Print/PDF)</span>
+                  </button>
+                </div>
+              </div>
 
-        {/* Bottom Motion Profile Graph (Exact match with spreadsheet graph) */}
-        <div className="margin-top">
-          <MotionProfileGraph
-            points={results.profilePoints}
-            motor={motor}
-          />
-        </div>
-      </main>
+              {/* Top 3 Result Columns: Calculation Results, Review Check, Regeneration Check */}
+              <div className="grid-3col margin-top">
+                <CalculationResults results={results} />
+                <EvaluationCheck results={results} />
+                <RegenerationCheck regen={results.regen} />
+              </div>
+
+              {/* Bottom Section: Calculated Torque Profile Graph */}
+              <TorqueProfileGraph
+                points={results.profilePoints}
+                results={results}
+                motor={motor}
+              />
+            </div>
+          )}
+        </main>
+      </ErrorBoundary>
+
+      {/* Progress Bar Loading Modal */}
+      <ProgressBarModal
+        isOpen={isCalculating}
+        onComplete={handleProgressComplete}
+      />
 
       {/* Formula Info Modal */}
       <FormulaModal
@@ -200,12 +315,14 @@ export default function App() {
         onUpdateCatalog={handleUpdateCatalog}
       />
 
-      {/* Report Modal */}
+      {/* Printable Report Modal */}
       {showReport && (
         <ReportView
           inputs={inputs}
           motor={motor}
           results={results}
+          locationAddress={locationAddress}
+          onUpdateAddress={handleUpdateAddress}
           onClose={() => setShowReport(false)}
         />
       )}

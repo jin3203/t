@@ -1,5 +1,6 @@
 import React from 'react';
 import { Zap } from 'lucide-react';
+import { safeFixed } from '../utils/motorCalculations';
 
 export default function RegenerationCheck({ regen }) {
   const data = regen || {
@@ -25,7 +26,7 @@ export default function RegenerationCheck({ regen }) {
             <tr>
               <td className="field-label">회생 에너지 (Regen Energy)</td>
               <td className="field-value readonly-cell font-mono text-center font-bold">
-                {data.regenEnergyPerCycle !== undefined ? data.regenEnergyPerCycle.toFixed(2) : '-22.67'}
+                {safeFixed(data.regenEnergyPerCycle, 2, '-22.67')}
               </td>
               <td className="field-unit">W</td>
             </tr>
@@ -33,7 +34,7 @@ export default function RegenerationCheck({ regen }) {
             <tr>
               <td className="field-label">내부 Shunt 저항값</td>
               <td className="field-value readonly-cell font-mono text-center">
-                {data.internalShuntRes}
+                {data.internalShuntRes ?? 50}
               </td>
               <td className="field-unit">Ohm</td>
             </tr>
@@ -41,7 +42,7 @@ export default function RegenerationCheck({ regen }) {
             <tr>
               <td className="field-label">내부 Shunt 용량</td>
               <td className="field-value readonly-cell font-mono text-center">
-                {data.internalShuntCap}
+                {data.internalShuntCap ?? 30}
               </td>
               <td className="field-unit">W</td>
             </tr>
@@ -49,7 +50,7 @@ export default function RegenerationCheck({ regen }) {
             <tr>
               <td className="field-label">외부 Shunt 저항값</td>
               <td className={`field-value text-center font-bold ${data.isExternalShuntNeeded ? 'text-warn' : 'highlight-cell-green'}`}>
-                {data.extShuntResText}
+                {data.extShuntResText || '불필요'}
               </td>
               <td className="field-unit">Ohm</td>
             </tr>
@@ -57,7 +58,7 @@ export default function RegenerationCheck({ regen }) {
             <tr>
               <td className="field-label">외부 Shunt 용량값</td>
               <td className={`field-value text-center font-bold ${data.isExternalShuntNeeded ? 'text-warn' : 'highlight-cell-green'}`}>
-                {data.extShuntCapText}
+                {data.extShuntCapText || '불필요'}
               </td>
               <td className="field-unit">W</td>
             </tr>

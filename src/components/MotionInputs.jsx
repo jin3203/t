@@ -1,15 +1,14 @@
 import React from 'react';
 import { Activity } from 'lucide-react';
+import { handleEnterKeyNavigation } from '../utils/focusHelper';
+import { safeFixed } from '../utils/motorCalculations';
 
 export default function MotionInputs({ inputs, setInputs, results }) {
   const handleChange = (field, value) => {
-    setInputs((prev) => {
-      const updated = {
-        ...prev,
-        [field]: typeof value === 'string' ? value : parseFloat(value) || 0
-      };
-      return updated;
-    });
+    setInputs((prev) => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -30,11 +29,12 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.1"
-                  value={inputs.distance}
+                  value={inputs.distance ?? 1.1}
                   onChange={(e) => handleChange('distance', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
-              <td className="field-unit">m ({inputs.distance * 1000} mm)</td>
+              <td className="field-unit">m ({(Number(inputs.distance || 0) * 1000).toFixed(0)} mm)</td>
             </tr>
 
             <tr>
@@ -43,6 +43,7 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <select
                   value={inputs.profileType || 'speed'}
                   onChange={(e) => handleChange('profileType', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                   className="excel-select"
                 >
                   <option value="speed">부하속도 지정 (Speed Based)</option>
@@ -57,8 +58,9 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.05"
-                  value={inputs.maxVelocity}
+                  value={inputs.maxVelocity ?? 0.5}
                   onChange={(e) => handleChange('maxVelocity', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">m/sec</td>
@@ -70,8 +72,9 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.1"
-                  value={inputs.moveTime}
+                  value={inputs.moveTime ?? 2.0}
                   onChange={(e) => handleChange('moveTime', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">sec</td>
@@ -83,8 +86,9 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.05"
-                  value={inputs.accelTime}
+                  value={inputs.accelTime ?? 0.5}
                   onChange={(e) => handleChange('accelTime', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">sec</td>
@@ -96,8 +100,9 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.05"
-                  value={inputs.decelTime}
+                  value={inputs.decelTime ?? 0.5}
                   onChange={(e) => handleChange('decelTime', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">sec</td>
@@ -106,7 +111,7 @@ export default function MotionInputs({ inputs, setInputs, results }) {
             <tr>
               <td className="field-label">등속시간 (Const Speed)</td>
               <td className="field-value readonly-cell font-mono">
-                {results.constantTime ? results.constantTime.toFixed(3) : '1.000'}
+                {safeFixed(results?.constantTime, 3, '1.000')}
               </td>
               <td className="field-unit">sec</td>
             </tr>
@@ -117,8 +122,9 @@ export default function MotionInputs({ inputs, setInputs, results }) {
                 <input
                   type="number"
                   step="0.1"
-                  value={inputs.dwellTime}
+                  value={inputs.dwellTime ?? 1.0}
                   onChange={(e) => handleChange('dwellTime', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">sec</td>
@@ -127,7 +133,7 @@ export default function MotionInputs({ inputs, setInputs, results }) {
             <tr>
               <td className="field-label font-bold">CycleTime (총 주기)</td>
               <td className="field-value readonly-cell font-mono font-bold">
-                {results.cycleTime ? results.cycleTime.toFixed(2) : '3.00'}
+                {safeFixed(results?.cycleTime, 2, '3.00')}
               </td>
               <td className="field-unit">sec</td>
             </tr>

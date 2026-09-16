@@ -1,5 +1,7 @@
 import React from 'react';
 import { Cpu, PlusCircle } from 'lucide-react';
+import { handleEnterKeyNavigation } from '../utils/focusHelper';
+import { safeFixed } from '../utils/motorCalculations';
 
 export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMotor }) {
   const handlePresetChange = (presetId) => {
@@ -14,11 +16,10 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
       ...prev,
       id: prev.id.startsWith('CUSTOM') ? prev.id : `CUSTOM_${Date.now()}`,
       maker: prev.maker || '사용자 지정',
-      [field]: typeof value === 'string' ? value : parseFloat(value) || 0
+      [field]: value
     }));
   };
 
-  // Group catalog by maker
   const groupedCatalog = motorCatalog.reduce((acc, item) => {
     const makerKey = item.maker || '기타';
     if (!acc[makerKey]) acc[makerKey] = [];
@@ -53,13 +54,14 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <select
                   value={motor.id}
                   onChange={(e) => handlePresetChange(e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                   className="excel-select font-bold"
                 >
                   {Object.entries(groupedCatalog).map(([maker, list]) => (
                     <optgroup key={maker} label={`--- ${maker} ---`}>
                       {list.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.model} ({p.powerW}W / {Number(p.ratedTorque).toFixed(2)}Nm)
+                          {p.model} ({p.powerW}W / {safeFixed(p.ratedTorque, 2)}Nm)
                         </option>
                       ))}
                     </optgroup>
@@ -72,8 +74,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
               <td className="field-label">브레이크 유무 (Brake)</td>
               <td className="field-value highlight-cell">
                 <select
-                  value={motor.brake}
+                  value={motor.brake ?? 0}
                   onChange={(e) => handleFieldChange('brake', parseInt(e.target.value, 10))}
+                  onKeyDown={handleEnterKeyNavigation}
                   className="excel-select text-center"
                 >
                   <option value={1}>1 (유)</option>
@@ -88,8 +91,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
               <td className="field-value highlight-cell" colSpan={2}>
                 <input
                   type="text"
-                  value={motor.driveModel}
+                  value={motor.driveModel || ''}
                   onChange={(e) => handleFieldChange('driveModel', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                   className="font-bold text-center"
                 />
               </td>
@@ -101,8 +105,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="100"
-                  value={motor.ratedSpeed}
+                  value={motor.ratedSpeed ?? 3000}
                   onChange={(e) => handleFieldChange('ratedSpeed', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">RPM</td>
@@ -114,8 +119,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="100"
-                  value={motor.maxSpeed}
+                  value={motor.maxSpeed ?? 6000}
                   onChange={(e) => handleFieldChange('maxSpeed', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">RPM</td>
@@ -127,8 +133,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="0.01"
-                  value={motor.ratedTorque}
+                  value={motor.ratedTorque ?? 1.27}
                   onChange={(e) => handleFieldChange('ratedTorque', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">[N·m]</td>
@@ -140,8 +147,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="0.01"
-                  value={motor.maxTorque}
+                  value={motor.maxTorque ?? 4.46}
                   onChange={(e) => handleFieldChange('maxTorque', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">[N·m]</td>
@@ -153,8 +161,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="0.01"
-                  value={(motor.rotorInertia * 1e4).toFixed(2)}
+                  value={((motor.rotorInertia || 0.35e-4) * 1e4).toFixed(2)}
                   onChange={(e) => handleFieldChange('rotorInertia', (parseFloat(e.target.value) || 0) * 1e-4)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">[kg·m²x10⁻⁴]</td>
@@ -166,8 +175,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="0.1"
-                  value={motor.ratedCurrent}
+                  value={motor.ratedCurrent ?? 2.6}
                   onChange={(e) => handleFieldChange('ratedCurrent', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">Arms</td>
@@ -179,8 +189,9 @@ export default function MotorSelect({ motor, setMotor, motorCatalog, onOpenAddMo
                 <input
                   type="number"
                   step="0.1"
-                  value={motor.maxCurrent}
+                  value={motor.maxCurrent ?? 8.7}
                   onChange={(e) => handleFieldChange('maxCurrent', e.target.value)}
+                  onKeyDown={handleEnterKeyNavigation}
                 />
               </td>
               <td className="field-unit">Arms</td>
